@@ -38,8 +38,11 @@ python3 video/render.py video/beispiele/router-standort.json ausgabe.mp4 --vorsc
 | `titel` | `zusatz` | Einstieg (Hook), großer Titel |
 | `liste` | `punkte` (max. 5), `symbol` (`x` oder `haken`) | Tipps, Fehler, Checkliste |
 | `balken` | `balken` (max. 4: `text`, `wert` 0–1, `farbe` blau/rosa/gold), `fussnote` | Vergleich |
-| `mitte` | `vorher`, `nachher` | Gerät wandert in die Raummitte |
-| `verbindung` | `links`, `rechts`, `kabel` | Zwei Geräte per Kabel verbunden |
+| `mitte` | `vorher`, `nachher`, `geraet` | Gerät wandert in die Raummitte |
+| `verbindung` | `links`, `rechts`, `kabel`, `geraet_links`, `geraet_rechts` | Zwei Geräte per Kabel verbunden |
+
+Gerätesymbole (`geraet`, `geraet_links`, `geraet_rechts`): `router`, `kamera`, `switch`, `ap` (Access Point).
+Beispiel Kamera am Switch: `"geraet_links": "switch", "geraet_rechts": "kamera", "kabel": "PoE-Kabel"`.
 | `outro` | `zusatz` (optional) | Abschluss mit netzwerkfaser.de |
 
 Gemeinsame Felder: `dauer` (Sekunden), `label` (Kapitel oben links), `titel`, `untertitel`.

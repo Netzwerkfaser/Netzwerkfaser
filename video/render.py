@@ -155,9 +155,47 @@ def router(d, cx, cy, s=1.0, col=WHITE):
         d.ellipse([x - 6, cy - 6, x + 6, cy + 6], fill=BLUE if k < 2 else ROSE)
 
 
-def geraet_rund(d, cx, cy):
-    d.ellipse([cx - 60, cy - 60, cx + 60, cy + 60], fill=DARK, outline=WHITE, width=4)
+def geraet_rund(d, cx, cy, s=1.0):
+    r = int(60 * s)
+    d.ellipse([cx - r, cy - r, cx + r, cy + r], fill=DARK, outline=WHITE, width=4)
     d.ellipse([cx - 12, cy - 12, cx + 12, cy + 12], fill=BLUE)
+
+
+def kamera(d, cx, cy, s=1.0, col=WHITE):
+    w, h = int(170 * s), int(80 * s)
+    # Halterung
+    d.line([(cx - w // 2 + 20, cy), (cx - w // 2 - 30, cy + int(70 * s))], fill=col, width=int(8 * s))
+    d.rectangle([cx - w // 2 - 60, cy + int(70 * s), cx - w // 2, cy + int(84 * s)], fill=col)
+    # Gehäuse und Objektiv
+    d.rounded_rectangle([cx - w // 2, cy - h // 2, cx + w // 2, cy + h // 2],
+                        radius=int(18 * s), fill=DARK, outline=col, width=4)
+    lx = cx + w // 2 - int(10 * s)
+    lr = int(30 * s)
+    d.ellipse([lx - lr, cy - lr, lx + lr, cy + lr], fill=DARK, outline=col, width=4)
+    d.ellipse([lx - lr // 2, cy - lr // 2, lx + lr // 2, cy + lr // 2], fill=BLUE)
+    d.ellipse([cx - w // 2 + 18, cy - 8, cx - w // 2 + 34, cy + 8], fill=ROSE)
+
+
+def switch(d, cx, cy, s=1.0, col=WHITE):
+    w, h = int(220 * s), int(60 * s)
+    d.rounded_rectangle([cx - w // 2, cy - h // 2, cx + w // 2, cy + h // 2],
+                        radius=int(10 * s), fill=DARK, outline=col, width=4)
+    for k in range(6):
+        x = cx - w // 2 + int(24 * s) + k * int(30 * s)
+        d.rectangle([x, cy - int(10 * s), x + int(20 * s), cy + int(12 * s)],
+                    outline=BLUE if k % 2 == 0 else ROSE, width=3)
+
+
+def geraet(d, art, cx, cy, s=1.0):
+    """Zeichnet ein Gerätesymbol: router, kamera, switch, ap."""
+    if art == "kamera":
+        kamera(d, cx, cy, s)
+    elif art == "switch":
+        switch(d, cx, cy, s)
+    elif art == "ap":
+        geraet_rund(d, cx, cy, s)
+    else:
+        router(d, cx, cy, s)
 
 
 # ---------------- Szenentypen ----------------
@@ -238,7 +276,7 @@ def sz_mitte(s, t, dur):
     ex, ey = W // 2, 975
     cx, cy = int(sx + (ex - sx) * p), int(sy + (ey - sy) * p)
     ringe(d, cx, cy, t, maxr=430, color=BLUE if p > 0.9 else ROSE, staerke=0.9)
-    router(d, cx, cy, 0.9)
+    geraet(d, s.get("geraet", "router"), cx, cy, 0.9)
     tag = s.get("vorher", "Ecke: schwach") if p < 0.5 else s.get("nachher", "Mitte: gut verteilt")
     d.text((W // 2, y1 + 70), tag, font=F("Inter-Bold", 48), fill=ROSE if p < 0.5 else BLUE, anchor="mm")
     untertitel(d, s.get("untertitel", ""), t)
@@ -256,9 +294,9 @@ def sz_verbindung(s, t, dur):
     d.line([(ax, yy + 60), (ax, yy + 180), (ax + int((bx - ax) * p), yy + 180)], fill=ROSE, width=8)
     if p > 0.98:
         d.line([(bx, yy + 180), (bx, yy + 60)], fill=ROSE, width=8)
-    router(d, ax, yy, 0.8)
+    geraet(d, s.get("geraet_links", "router"), ax, yy, 0.8)
     if p > 0.6:
-        geraet_rund(d, bx, yy)
+        geraet(d, s.get("geraet_rechts", "ap"), bx, yy, 0.8)
     d.text((ax, yy + 300), s.get("links", "Router"), font=F("Inter-Bold", 44), fill=WHITE, anchor="mm")
     d.text((bx, yy + 300), s.get("rechts", "Access Point"), font=F("Inter-Bold", 44), fill=WHITE, anchor="mm")
     d.text((W // 2, yy + 240), s.get("kabel", "LAN-Kabel"), font=F("Inter-SemiBold", 38), fill=ROSE, anchor="mm")
